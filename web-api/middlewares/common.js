@@ -9,14 +9,17 @@ errRoute = (req, res, next) => {
     error.status = 404;
     next(error);
 };
-errHandler = (err, req, res, next) => {
-    var errorObj = {
-        status: err.status,
-        error: {
-            message: err.message
-        }
-    };
+
+    errHandler = (err, req, res, next) => {
+        var errorObj = {
+            status: err.status,
+            error: {
+                message: err.message
+            }
+        };
+    
+        res.status(err.status).json(errorObj);
+    }; 
 
 
-}
 module.exports = { logger, errRoute, errHandler }
