@@ -1,2 +1,2 @@
-# NodeJS
-exercises in JavaScript and NodeJS
+# code-academy
+NodeJS project
