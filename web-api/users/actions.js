@@ -1,13 +1,13 @@
 const fs = require('fs');
 const path = require('path');
+const { emailValidator } = require('../helper');
 
-
-getAllUsers=(req,res) => {
-let rawdata = fs.readFileSync(path.join(__dirname, 'users.json'));
-let users = JSON.parse(rawdata);
-res.status(200).send(users); 
+getAllUsers = (req, res) => {
+    let rawdata = fs.readFileSync(path.join(__dirname, 'users.json'));
+    let users = JSON.parse(rawdata);
+    res.status(200).send(users);
 }
-getUser =(req,res,next)=>{
+getUser = (req, res, next) => {
     let rawdata = fs.readFileSync(path.join(__dirname, 'users.json'));
     let users = JSON.parse(rawdata);
 
@@ -23,24 +23,33 @@ getUser =(req,res,next)=>{
     res.status(200).send(currentUser[0]);
 }
 
-createUser=(req,res)=>{
-    let rawdata = fs.readFileSync(path.join(__dirname, 'users.json'));
-    let users = JSON.parse(rawdata);
-    users.forEach(member => {
-        if (member.id == req.body.id) {
-            var error = new Error("id already exist");
-            error.status = 409;
-            next(error);
-        }
-        else {
-            users.push(req.body);
-            let data = JSON.stringify(users);
-            fs.writeFileSync(path.join(__dirname, 'users.json'), data);
+createUser = (req, res,next) => {
 
-        }
-    })
-}
-userFullUpdate=(req,res)=>{
+    let isValid = emailValidator(req.body.email);
+    // users.forEach(member => {
+    //     if (member.id == req.body.id) {
+    //         var error = new Error("id already exist");
+    //         error.status = 409;
+    //         next(error);
+    if (!isValid) {
+        var error = new Error("Email is not valid");
+        error.status = 401;
+        next(error);
+    } else {
+        let rawdata = fs.readFileSync(path.join(__dirname, 'users.json'));
+        let users = JSON.parse(rawdata);
+        users.push(req.body);
+        let data = JSON.stringify(users);
+        fs.writeFileSync(path.join(__dirname, 'users.json'), data);
+        res.status(201).send("User has been created!");
+    }
+
+};
+
+
+// })
+
+userFullUpdate = (req, res) => {
     let rawdata = fs.readFileSync(path.join(__dirname, 'users.json'));
     let users = JSON.parse(rawdata);
     const found = users.some(member => member.id == req.body.id);
@@ -60,7 +69,7 @@ userFullUpdate=(req,res)=>{
 
 }
 
-userPartUpdate =(req,res)=>{
+userPartUpdate = (req, res) => {
     let rawdata = fs.readFileSync(path.join(__dirname, 'users.json'));
     let users = JSON.parse(rawdata);
     const found = users.some(member => member.id == req.body.id);
@@ -77,21 +86,23 @@ userPartUpdate =(req,res)=>{
         next(error);
 
     }
-    
+
     res.send("Partial update for user with id = " + req.params.id);
 }
-deleteUser=()=>{
+deleteUser = () => {
     let rawdata = fs.readFileSync(path.join(__dirname, 'users.json'));
     let users = JSON.parse(rawdata);
-    users.forEach(member =>{
-        if(member.id == req.params.id){
-            users.splice(users.indexOf(member),1);
+    users.forEach(member => {
+        if (member.id == req.params.id) {
+            users.splice(users.indexOf(member), 1);
             let data = JSON.stringify(users);
-        fs.writeFileSync(path.join(__dirname, 'users.json'), data);
+            fs.writeFileSync(path.join(__dirname, 'users.json'), data);
         }
     })
 
     res.send("Delete user with id = " + req.params.id);
 }
-module.exports={getAllUsers,
-    getUser,createUser,userFullUpdate,userPartUpdate,deleteUser}
+module.exports = {
+    getAllUsers,
+    getUser, createUser, userFullUpdate, userPartUpdate, deleteUser
+}

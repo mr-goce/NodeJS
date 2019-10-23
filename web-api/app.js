@@ -9,13 +9,13 @@ const middleware = require('./middlewares/common');
 
 const app = express();
 
-app.use('/users', users);
-
 app.use(middleware.logger);
-app.use(middleware.errRoute);
-app.use(middleware.errHandler);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use('/users', users);
+
+app.use(middleware.errRoute);
+app.use(middleware.errHandler);
 
 
 
