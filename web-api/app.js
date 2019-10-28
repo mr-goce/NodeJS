@@ -3,6 +3,7 @@ var bodyParser = require('body-parser');
 // const fs = require('fs');
 // const path = require('path');
 const users = require('./users/routes');
+const posts = require('./posts/routes');
 require('dotenv/config');
 
 const middleware = require('./middlewares/common');
@@ -13,6 +14,8 @@ app.use(middleware.logger);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use('/users', users);
+// za posts rutata
+app.use('/posts', posts);
 
 app.use(middleware.errRoute);
 app.use(middleware.errHandler);
